@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jenkins-config
+  namespace: cicd
+data:
+  JENKINS_OPTS: "--prefix=/jenkins"
+

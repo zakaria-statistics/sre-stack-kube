@@ -1,0 +1,49 @@
+# Ignore VSCode settings
+.vscode-server/
+
+# Ignore user-specific and system files
+.bash_history
+.bash_logout
+.bashrc
+.profile
+.viminfo
+.wget-hsts
+.sudo_as_admin_successful
+.ssh/
+.cache/
+
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore Linux-specific files
+*~
+*.swp
+*.swo
+*.bak
+*.lock
+*.pid
+*.tmp
+*.log
+
+# Ignore compiled binaries
+*.o
+*.so
+*.a
+*.out
+*.exe
+*.dll
+*.class
+
+# Ignore dependency folders
+node_modules/
+target/
+build/
+dist/
+
+# Ignore environment files
+.env
+.env.local
+
