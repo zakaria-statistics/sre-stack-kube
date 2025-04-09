@@ -4,13 +4,10 @@ metadata:
   name: jenkins-service
   namespace: cicd
 spec:
-  type: NodePort
-  externalTrafficPolicy: Local
+  type: ClusterIP
   selector:
     app: jenkins
   ports:
     - name: http
       port: 8080
       targetPort: 8080
-      nodePort: 30080
-

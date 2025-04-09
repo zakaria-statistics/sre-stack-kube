@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-daemon
+  namespace: cicd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docker-daemon
+  template:
+    metadata:
+      labels:
+        app: docker-daemon
+    spec:
+      containers:
+        - name: docker
+          image: docker:19.03-dind
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: docker-graph-storage
+              mountPath: /var/lib/docker
+      volumes:
+        - name: docker-graph-storage
+          emptyDir: {}
