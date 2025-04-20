@@ -18,6 +18,7 @@ spec:
         fsGroup: 1000
       containers:
       - name: jenkins
+        image: jenkins/jenkins:lts
         resources:
           requests:
             cpu: "1000m"
@@ -30,9 +31,8 @@ spec:
           value: "-Xms1g -Xmx2g -XX:+UseG1GC"
         - name: DOCKER_HOST
           value: "tcp://docker-daemon.cicd.svc.cluster.local:2375"
-        image: jenkins/jenkins:lts
         securityContext:
-          runAsUser: 0
+          runAsUser: 0  # Start as root to install packages
         ports:
         - containerPort: 8080
         - containerPort: 50000
@@ -42,6 +42,26 @@ spec:
         volumeMounts:
         - name: jenkins-storage
           mountPath: /var/jenkins_home
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          # Install tools
+          apt-get update && \
+          apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release && \
+          mkdir -p /etc/apt/keyrings && \
+          curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+          apt-get update && \
+          apt-get install -y docker-ce-cli && \
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+          chmod +x kubectl && \
+          mv kubectl /usr/local/bin/ && \
+          
+          # Fix permissions
+          chown -R 1000:1000 /var/jenkins_home && \
+          
+          # Start Jenkins as jenkins user
+          su jenkins -c "/usr/local/bin/jenkins.sh"
       volumes:
       - name: jenkins-storage
         persistentVolumeClaim:
